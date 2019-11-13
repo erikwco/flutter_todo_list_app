@@ -22,6 +22,9 @@ class _ListTodoPageState extends State<ListTodoPage> {
     Todo(name: 'Task7', description: 'Task 7 description'),
   ];
 
+  //* ********************************
+  //* Todo helpers
+  //* ********************************
   _addTodo(Todo todo){
     todos.add(todo);
   }
@@ -33,8 +36,15 @@ class _ListTodoPageState extends State<ListTodoPage> {
   _deleteTodo(int index) {
     todos.removeAt(index);
   }
+  //* ********************************
+  //* Todo helpers
+  //* ********************************
 
-  //* Construye todo item
+
+  //* ********************************
+  //* Todo Ui
+  //* ********************************
+  //* Construye item de cada tarea
   Widget _buildTodoItem(Todo todo, int index) {
     return ListTile(
       leading: IconButton(
@@ -65,7 +75,7 @@ class _ListTodoPageState extends State<ListTodoPage> {
     );
   }
 
-  //* muestra dialogo para 
+  //* muestra dialogo para la creación de tarea
   Widget _buildDialog() {
     return AlertDialog(
       content: Form(
@@ -126,6 +136,7 @@ class _ListTodoPageState extends State<ListTodoPage> {
     );
   }
 
+  //* Build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
