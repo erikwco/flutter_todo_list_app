@@ -22,15 +22,43 @@ class _ListTodoPageState extends State<ListTodoPage> {
     Todo(name: 'Task7', description: 'Task 7 description'),
   ];
 
+  _addTodo(Todo todo){
+    todos.add(todo);
+  }
+
+  _updateTodo(int index){
+    todos[index].isComplete = !todos[index].isComplete;
+  }
+
+  _deleteTodo(int index) {
+    todos.removeAt(index);
+  }
+
   //* Construye todo item
-  Widget _buildTodoItem(Todo todo) {
+  Widget _buildTodoItem(Todo todo, int index) {
     return ListTile(
-      leading: Icon(Icons.check_box_outline_blank),
+      leading: IconButton(
+        icon: Icon(todo.isComplete ?  Icons.check_box: Icons.check_box_outline_blank),
+        onPressed: () {
+          setState(() {
+            _updateTodo(index);
+            // todo.isComplete = !todo.isComplete;
+          });
+        },
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete_forever, color: Colors.redAccent,),
+        onPressed: () {
+          setState(() {
+            _deleteTodo(index);
+          });
+        },
+      ),
       title: Text(
         todo.name,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          decoration: TextDecoration.none,
+          decoration: todo.isComplete ? TextDecoration.lineThrough : TextDecoration.none,
         ),
       ),
       subtitle: Text(todo.description),
@@ -85,7 +113,7 @@ class _ListTodoPageState extends State<ListTodoPage> {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     setState(() {
-                      todos.add(Todo(name: name, description: description));
+                      _addTodo(Todo(name: name, description: description));
                     });
                     Navigator.of(context).pop();
                   }
@@ -107,7 +135,7 @@ class _ListTodoPageState extends State<ListTodoPage> {
       body: ListView.builder(
         itemCount: todos.length,
         itemBuilder: (BuildContext context, int index) {
-          return _buildTodoItem(todos[index]);
+          return _buildTodoItem(todos[index], index);
         },
       ),
       floatingActionButton: FloatingActionButton(
