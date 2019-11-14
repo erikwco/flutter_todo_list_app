@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/providers/todo-provider.dart';
+import 'package:todo_list/src/services/todo-service-sqflite.dart';
+// import 'package:todo_list/src/services/todo-service.dart';
 import 'package:todo_list/src/widgets/todo/list-todo-page.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<TodoProvider>.value(
-          value: TodoProvider(),
+          value: TodoProvider(TodoServiceSQFLite()),
         )
       ],
       child: MaterialApp(

@@ -1,10 +1,22 @@
 import 'dart:async';
 
 import 'package:todo_list/src/models/todo.dart';
+import 'package:todo_list/src/services/abstract-todo-service.dart';
 
 //* Todo service
 //* Local
-class TodoService {
+class TodoService  extends Service{
+
+  //* Singleton instance - para no permitir mas de una sola instancia
+  static final TodoService instance = TodoService._();
+  factory TodoService() => instance;
+  TodoService._() ;
+
+  @override
+  Service createInstance() {
+    return instance;
+  }
+
   final  List<Todo> todos = [
     Todo(name: 'Task1', description: 'Task 1 description'),
     Todo(name: 'Task2', description: 'Task 2 description'),
@@ -16,29 +28,40 @@ class TodoService {
   ];
 
 
+  @override
   Future<List<Todo>> getTodos()  {
     return Future.value(todos);
   }
 
+  @override
   Todo getTodoByIndex(int index){
     return todos.elementAt(index);
   }
 
+  @override
   Future<int> addTodo(Todo todo) {
     todos.add(todo);
     return Future.value(1);
   }
 
-  Future<int> deleteTodo(int index){
-    todos.removeAt(index);
+  @override
+  Future<int> deleteTodo(String key){
+    todos.removeAt(int.parse(key));
     return Future.value(1);
   }
 
-  Future<int> updateTodo(int index, Todo todo){
+  @override
+  Future<int> updateTodo(Todo todo){
+    var index = todos.indexWhere((item) => item.name == todo.name);
     todos[index].name = todo.name;
     todos[index].description = todo.description;
     todos[index].isComplete = todo.isComplete;
     return Future.value(1);
+  }
+
+  @override
+  Todo getTodoByKey(String key) {
+    return null;
   }
 
 
