@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:todo_list/src/models/todo.dart';
 
 //* Todo service
@@ -14,26 +16,29 @@ class TodoService {
   ];
 
 
-  List<Todo> getTodos() {
-    return todos;
+  Future<List<Todo>> getTodos()  {
+    return Future.value(todos);
   }
 
   Todo getTodoByIndex(int index){
     return todos.elementAt(index);
   }
 
-  addTodo(Todo todo) {
+  Future<int> addTodo(Todo todo) {
     todos.add(todo);
+    return Future.value(1);
   }
 
-  deleteTodo(int index){
+  Future<int> deleteTodo(int index){
     todos.removeAt(index);
+    return Future.value(1);
   }
 
-  updateTodo(int index, Todo todo){
+  Future<int> updateTodo(int index, Todo todo){
     todos[index].name = todo.name;
     todos[index].description = todo.description;
     todos[index].isComplete = todo.isComplete;
+    return Future.value(1);
   }
 
 
