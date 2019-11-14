@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/models/todo.dart';
-import 'package:todo_list/src/services/todo-service-sqflite.dart';
+import 'package:todo_list/src/services/abstract-todo-service.dart';
+// import 'package:todo_list/src/services/todo-service-sqflite.dart';
 import 'package:todo_list/src/services/todo-service.dart';
 
 //* Todo provider
-class TodoProvider extends ChangeNotifier {
+class TodoProvider<T extends Service> extends ChangeNotifier {
 
-  final TodoService _todoService = TodoService();
-  final TodoServiceSQFLite _todoServiceDb = TodoServiceSQFLite.instance;
+  TodoProvider(T service): _todoService = service.createInstance();   
+  final T _todoService;
+  // final TodoServiceSQFLite _todoServiceDb = TodoServiceSQFLite.instance;
   final List<Todo> _todos = List<Todo>();
 
   //* Listado de Tareas
@@ -43,7 +45,7 @@ class TodoProvider extends ChangeNotifier {
     // SQFlite
     // await _todoServiceDb.deleteTodo(_todos[index].name);
     // Local
-    await _todoService.deleteTodo(index);
+    await _todoService.deleteTodo(index.toString());
 
     _todos.removeAt(index);
     notifyListeners();
@@ -53,7 +55,7 @@ class TodoProvider extends ChangeNotifier {
     // SQFLite
     // _todoServiceDb.updateTodo(todo);
     // Local
-    _todoService.updateTodo(index, todo);
+    _todoService.updateTodo(todo);
     _todos[index] = todo;
     notifyListeners();
   }

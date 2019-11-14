@@ -1,20 +1,24 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:todo_list/src/models/todo.dart';
+import 'package:todo_list/src/services/abstract-todo-service.dart';
 
 //* **********************************************************
 //* Servicio para conectarse con SqFlite
 //* Esta diseñado pensando solo en una tabla en especifico
 //* aunque facilmente puede hacerse generica
 //* **********************************************************
-class TodoServiceSQFLite {
+class TodoServiceSQFLite  extends Service{
 
   //* Singleton instance - para no permitir mas de una sola instancia
   static final TodoServiceSQFLite instance = TodoServiceSQFLite._();
-  factory TodoServiceSQFLite() => instance;
+  factory TodoServiceSQFLite() => instance ;
   TodoServiceSQFLite._() ;
 
-
+  @override
+  Service createInstance() {
+    return instance;
+  }
   //* Instancia de la base
   Database _database;
   final String _table = 'tasks';
@@ -57,6 +61,7 @@ class TodoServiceSQFLite {
   }
 
   //* List of Tareas
+  @override
   Future<List<Todo>> getTodos() async {
     final Database db = await this.database;
     final List<Map<String, dynamic>> tasks = await db.query(_table);
@@ -66,21 +71,36 @@ class TodoServiceSQFLite {
   }
 
   //* Agregando tarea
+  @override
   Future<int> addTodo(Todo todo) async {
     final Database db = await this.database;
     return await db.insert(_table, todo.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   // Eliminando Tarea
-  Future<int> deleteTodo(String name) async {
+  @override
+  Future<int> deleteTodo(String key) async {
     final Database db = await this.database;
-    return await db.delete(_table, where: 'name = ?', whereArgs: [name]);
+    return await db.delete(_table, where: 'name = ?', whereArgs: [key]);
   }
 
   // Actualizando Tarea
+  @override
   Future<int> updateTodo(Todo todo) async {
     final Database db = await this.database;
     return await db.update(_table, todo.toMap(), where: 'name = ?', whereArgs: [todo.name]);
+  }
+
+  @override
+  Todo getTodoByIndex(int index) {
+    // TODO: implement getTodoByIndex
+    return null;
+  }
+
+  @override
+  Todo getTodoByKey(String key) {
+    // TODO: implement getTodoByKey
+    return null;
   }
 
 }
