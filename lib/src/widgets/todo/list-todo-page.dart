@@ -35,7 +35,10 @@ class ListTodoPage extends StatelessWidget {
         },
       ),
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailTodoPage(index: index,)));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => DetailTodoPage(
+                  index: index,
+                )));
       },
       title: Text(
         todo.name,
@@ -114,15 +117,26 @@ class ListTodoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var prov = Provider.of<TodoProvider>(context);
-    var todos = prov.getTodos();
+    // var todos = prov.getTodos();
     return Scaffold(
       appBar: AppBar(
         title: Text("Todo List App"),
       ),
-      body: ListView.builder(
-        itemCount: todos.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _buildTodoItem(context, todos[index], index);
+      body: FutureBuilder(
+        future: prov.getTodos(),
+        builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          var todos = snapshot.data;
+          return ListView.builder(
+            itemCount: todos.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _buildTodoItem(context, todos[index], index);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
