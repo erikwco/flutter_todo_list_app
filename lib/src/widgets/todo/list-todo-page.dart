@@ -4,11 +4,16 @@ import 'package:todo_list/src/models/todo.dart';
 import 'package:todo_list/src/providers/todo-provider.dart';
 import 'package:todo_list/src/widgets/todo/detail-todo-page.dart';
 
-class ListTodoPage extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
-  //todo: por simplicidad se utilizaran dos String no finales para evitar cambiar a TextControllers
+class TaskForm {
   String name;
   String description;
+}
+
+class ListTodoPage extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  final TaskForm _form = TaskForm();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
 
   //* ********************************
   //* Todo Ui
@@ -71,7 +76,7 @@ class ListTodoPage extends StatelessWidget {
                   labelText: 'Nombre',
                 ),
                 onSaved: (String value) {
-                  name = value;
+                  _form.name = value;
                 },
                 validator: (String value) {
                   return value.isEmpty ? 'Ingrese una nombre' : null;
@@ -87,7 +92,7 @@ class ListTodoPage extends StatelessWidget {
                   labelText: 'Descripcion',
                 ),
                 onSaved: (String value) {
-                  description = value;
+                  _form.description = value;
                 },
                 validator: (String value) {
                   return value.isEmpty ? 'Ingrese una descripcion' : null;
@@ -101,7 +106,8 @@ class ListTodoPage extends StatelessWidget {
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
-                    prov.addTodo(Todo(name: name, description: description));
+                    prov.addTodo(
+                        Todo(name: _form.name, description: _form.description));
                     Navigator.of(context).pop();
                   }
                 },
@@ -122,22 +128,49 @@ class ListTodoPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Todo List App"),
       ),
-      body: FutureBuilder(
-        future: prov.getTodos(),
-        builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          var todos = snapshot.data;
-          return ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildTodoItem(context, todos[index], index);
-            },
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await prov.getTodos();
         },
+        key: _refreshIndicatorKey,
+        child: FutureBuilder(
+          future: prov.getTodos(),
+          builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }
+
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: Container(
+                    child: Text('sin registros favor agregue uno'),
+                  ),
+                );
+              }
+            }
+
+            var todos = snapshot.data;
+            if (todos.length == 0) {
+              return Center(
+                child: Container(
+                  child: Text('sin registros favor agregue uno'),
+                ),
+              );
+            }
+            return ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _buildTodoItem(context, todos[index], index);
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),

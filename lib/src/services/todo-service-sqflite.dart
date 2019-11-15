@@ -93,13 +93,11 @@ class TodoServiceSQFLite  extends Service{
 
   @override
   Todo getTodoByIndex(int index) {
-    // TODO: implement getTodoByIndex
     return null;
   }
 
   @override
   Todo getTodoByKey(String key) {
-    // TODO: implement getTodoByKey
     return null;
   }
 

@@ -46,7 +46,8 @@ class TodoService  extends Service{
 
   @override
   Future<int> deleteTodo(String key){
-    todos.removeAt(int.parse(key));
+    var index = todos.indexWhere((item) => item.name == key);
+    todos.removeAt(index);
     return Future.value(1);
   }
 
