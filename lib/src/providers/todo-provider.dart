@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/src/models/todo.dart';
-import 'package:todo_list/src/services/todo-service-sqflite.dart';
+import 'package:todo_list/src/services/abstract-todo-service.dart';
 
 //* Todo provider
-class TodoProvider extends ChangeNotifier {
+class TodoProvider<T extends Service> extends ChangeNotifier {
 
-  final TodoServiceSQFLite _todoServiceDb = TodoServiceSQFLite.instance;
+  TodoProvider(T service): _todoService = service.createInstance();   
+  final T _todoService;
   final List<Todo> _todos = List<Todo>();
 
   //* Listado de Tareas
   Future<List<Todo>> getTodos() async {
-    if (_todos.isNotEmpty) {      
-      return _todos;
-    }
-    var todos = await _todoServiceDb.getTodos();
+    _todos.clear();
+    var todos = await _todoService.getTodos();
     _todos.addAll(todos);
     return _todos;
   }
@@ -23,20 +22,22 @@ class TodoProvider extends ChangeNotifier {
   }
 
   addTodo(Todo todo) async {
-    await _todoServiceDb.addTodo(todo);
-    var todos = await _todoServiceDb.getTodos();
+    await _todoService.addTodo(todo);
+    var todos = await _todoService.getTodos();
+
     _todos..clear()..addAll(todos);
     notifyListeners();
   }
 
   deleteTodo(int index) async {
-    await _todoServiceDb.deleteTodo(_todos[index].name);
+    await _todoService.deleteTodo(_todos[index].name);
+
     _todos.removeAt(index);
     notifyListeners();
   }
 
   updateTodo(int index, Todo todo) {
-    _todoServiceDb.updateTodo(todo);
+    _todoService.updateTodo(todo);
     _todos[index] = todo;
     notifyListeners();
   }
