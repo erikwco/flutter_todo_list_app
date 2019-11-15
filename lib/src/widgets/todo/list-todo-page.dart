@@ -130,7 +130,7 @@ class ListTodoPage extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await prov.getTodos();
+          await prov.getTodos(pulling: true);
         },
         key: _refreshIndicatorKey,
         child: FutureBuilder(

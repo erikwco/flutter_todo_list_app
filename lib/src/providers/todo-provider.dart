@@ -10,8 +10,13 @@ class TodoProvider<T extends Service> extends ChangeNotifier {
   final List<Todo> _todos = List<Todo>();
 
   //* Listado de Tareas
-  Future<List<Todo>> getTodos() async {
-    _todos.clear();
+  Future<List<Todo>> getTodos({bool pulling = false}) async {
+    if (pulling) {
+      _todos.clear();
+    }
+    if (_todos.isNotEmpty){
+      return _todos;
+    }
     var todos = await _todoService.getTodos();
     _todos.addAll(todos);
     return _todos;
